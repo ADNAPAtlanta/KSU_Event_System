@@ -3,6 +3,7 @@ import smtplib
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from geopy.geocoders import Nominatim
+from geopy.geocoders import GoogleV3
 
 try:
     # for Python2
@@ -226,19 +227,29 @@ class eventForm:
         self.submitButton.grid(column=2)
 
     def submit(self):
+        geolocator = GoogleV3(api_key="AIzaSyB9NYRXQZN3gIcJue5SJa2jem7UdOzmOvI")
         name = self.name.get()
         organization = self.organization.get()
-        date = self.date.get()
+        date = self.day.get() + "/" + self.month.get() + "/" + self.year.get()
         description = self.description.get()
-        if self.building.get() == "Other":
-            address = self.address.get()
-        else:
-            address = ksuBuildings[self.building.get()]
-
         food = self.food.get()
         alcohol = self.alcohol.get()
         merchandise = self.merchandise.get()
-        print(name,organization,date,description,address,food,alcohol,merchandise)
+        if self.building.get() == "Other":
+            address = self.address.get()
+            location = geolocator.geocode(address, timeout=10)
+            lat = location.latitude
+            longitude = location.longitude
+        else:
+            address = ksuBuildings[self.building.get()]
+            print(ksuBuildings[self.building.get()])
+            location = geolocator.geocode(address, timeout=10)
+            lat = location.latitude
+            longitude = location.longitude
+
+        print(name,organization,date,description,address,food,alcohol,merchandise,lat,longitude)
+
+
 
 
 
