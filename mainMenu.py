@@ -4,13 +4,20 @@ from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from geopy.geocoders import Nominatim
 from geopy.geocoders import GoogleV3
+import datetime
+import time
+from email.mime.text import MIMEText
+
+
 
 try:
     # for Python2
     from Tkinter import *
+    from tkinter import filedialog
 except ImportError:
     # for Python3
     from tkinter import *
+    from tkinter import filedialog
 
 
 ksuBuildings = {"Baily Athletic Facility": "220 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
@@ -120,9 +127,9 @@ ksuBuildingsOrdered = ["Baily Athletic Facility",
 days = ["01", "02", "03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24",
         "25","26","27","28","29","30","31"]
 
-months = ["Jan", "Feb", "Mar", "Apr",
-	   			    "May", "Jun", "July", "Aug",
-				    "Sep", "Oct", "Nov", "Dec"]
+months = {"Jan": "01", "Feb":"02", "Mar":"03", "Apr":"04",
+	   			    "May":"05", "Jun":"06", "July":"07", "Aug":"08",
+				    "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
 
 years = ["2016","2017","2018"]
             
@@ -133,16 +140,18 @@ class eventForm:
     def __init__(self,master):
         self.master = master
         master.title("KSU Event System (organization ver.)")
-        master.minsize(width=300,height=300)
+        master.minsize(width=300, height=300)
         self.type = StringVar()
         self.type.set("Vacation")
 
         #entry variables
         self.name = StringVar()
+        self.email = StringVar()
         self.address = StringVar()
         self.building = StringVar()
         self.organization = StringVar()
         self.description = StringVar()
+        self.picture = StringVar()
         self.lat = DoubleVar()
         self.longitude = DoubleVar()
         self.date = StringVar()
@@ -163,48 +172,61 @@ class eventForm:
         self.year = StringVar()
         self.year.set("2016")
 
+
         #Entry labels
         self.nameLabel = Label(master, text="Name of Event",underline=0)
-        self.nameLabel.grid(row=1,column=1)
+        self.nameLabel.grid(column=1,row=0)
         self.nameEntry = Entry(master,bd=3,textvariable=self.name)
-        self.nameEntry.grid(row=2,column=1,padx=5)
+        self.nameEntry.grid(column=1,padx=5,row=1)
+
+        self.emailLabel = Label(master, text="Enter email",underline=0)
+        self.emailLabel.grid(column=1)
+        self.emailEntry = Entry(master, bd=3,textvariable=self.email)
+        self.emailEntry.grid(column=1)
+
         
         self.organizationLabel = Label(master, text="Organization/Club",underline=0)
-        self.organizationLabel.grid(row=1,column=2)
+        self.organizationLabel.grid(column=2,row=0)
         self.organizationEntry = Entry(master,bd=3,textvariable=self.organization)
-        self.organizationEntry.grid(row=2,column=2,padx=5)
+        self.organizationEntry.grid(column=2,padx=5,row=1)
         
         self.dateLabel = Label(master, text="Date",underline=0)
-        self.dateLabel.grid(row=1,column=4)
-        self.dayOption = OptionMenu(master,self.day,*days)
-        self.dayOption.grid(row=2,column=3)
+        self.dateLabel.grid(column=4,row=0)
+        self.dayOption = OptionMenu(master, self.day,*days)
+        self.dayOption.grid(column=3,row=1)
         self.monthOption = OptionMenu(master,self.month,*months)
-        self.monthOption.grid(row=2,column=4)
+        self.monthOption.grid(column=4,row=1)
         self.yearOption = OptionMenu(master,self.year,*years)
-        self.yearOption.grid(row=2,column=5)
+        self.yearOption.grid(column=5,row=1)
         
         self.descriptionLabel = Label(master, text="Description",underline=0)
-        self.descriptionLabel.grid(row=3,column=1)
+        self.descriptionLabel.grid(column=1)
         self.descriptionEntry = Text(master,bd=3,height=5)
-        self.descriptionEntry.grid(row=4,column=1,columnspan=2)
+        self.descriptionEntry.grid(column=1,columnspan=2)
+
+        self.addressLabel = Label(master, text="Address (Enter if off campus)",underline=0)
+        self.addressLabel.grid(column=2,sticky=W)
+        self.addressEntry = Entry(master,textvariable=self.address,bd=3)
+        self.addressEntry.grid(column=2,sticky=W)
+
+        self.pictureLabel = Label(master, text="Insert picture")
+        self.pictureLabel.grid(column=2,sticky=W)
+        self.pictureEntry = Entry(master)
+        self.pictureEntry.grid(column=2,sticky=W)
+        self.pictureButton = Button(master, text="Search",command=self.getPicture)
+        self.pictureButton.grid(column=2,sticky=W)
+
 
         self.buildingLabel = Label(master, text="Building",underline=0)
-        self.buildingLabel.grid(row=5,column=1)
+        self.buildingLabel.grid(column=1)
         self.building.set("Other")
         self.buildingSelection = OptionMenu(master,self.building,*ksuBuildingsOrdered)
         self.buildingSelection.grid(column=1)
 
 
-
-        self.addressLabel = Label(master, text="Address (Enter if off campus)",underline=0)
-        self.addressLabel.grid(row=5,column=2,sticky=W)
-        self.addressEntry = Entry(master,textvariable=self.address,bd=3)
-        self.addressEntry.grid(row=6,column=2,sticky=W)
-
-
         self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
         self.foodChoiceLabel.grid(column=1)
-        self.foodChoiceYes = Radiobutton(master,text="Yes",variable=self.food,value="Yes")
+        self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
         self.foodChoiceYes.grid(column=1)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
         self.foodChoiceNo.grid(column=1)
@@ -223,18 +245,35 @@ class eventForm:
         self.merchandiseChoiceNo = Radiobutton(master,text="No",variable=self.merchandise,value="No")
         self.merchandiseChoiceNo.grid(column=1)
 
-        self.submitButton = Button(master,text="Submit",command=self.submit)
+        self.submitButton = Button(master, text="Submit", command=self.submit)
         self.submitButton.grid(column=2)
 
     def submit(self):
         geolocator = GoogleV3(api_key="AIzaSyB9NYRXQZN3gIcJue5SJa2jem7UdOzmOvI")
-        name = self.name.get()
-        organization = self.organization.get()
-        date = self.day.get() + "/" + self.month.get() + "/" + self.year.get()
-        description = self.description.get()
-        food = self.food.get()
-        alcohol = self.alcohol.get()
-        merchandise = self.merchandise.get()
+        name = "name :" + self.name.get()
+        organization = "organization :" + self.organization.get()
+        picture = self.picture.get()
+        month =  months[self.month.get()]
+        date =  self.day.get() + "/" + month + "/" + self.year.get()
+        dateNum =  time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y").timetuple())
+        description = "description :" + self.description.get()
+        food = "food :" + self.food.get()
+        alcohol = "alcohol : " +self.alcohol.get()
+        merchandise = "merchandise :" + self.merchandise.get()
+        strFrom = self.email.get()
+        strTo = ["techSupport@adnap.co"]
+        msgRoot = MIMEMultipart(organization)
+        message = MIMEMultipart()
+
+        message["Subject"] = organization
+
+
+        fp = open(picture, "rb")
+        img = MIMEImage(fp.read())
+        fp.close()
+        #msg.attach(img)
+
+
         if self.building.get() == "Other":
             address = self.address.get()
             location = geolocator.geocode(address, timeout=10)
@@ -246,21 +285,34 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
+        messageText =  name,organization, date, dateNum, description, address,food, alcohol,merchandise,"lat :" +str(lat),"longitude :" +str(longitude)
+        message = 'Subject: %s\n%s' % (self.organization.get(),messageText )
+        msg = MIMEText(str(messageText))
+        msg["Subject"] = self.organization.get()
+        msgAlternative = MIMEMultipart('alternative')
+        msg.attach(msgAlternative)
+        msgText = MIMEText('This is the alternative plain text message.')
+        msgAlternative.attach(msgText)
 
-        print(name,organization,date,description,address,food,alcohol,merchandise,lat,longitude)
+        fp = open(picture, "rb")
+        img = MIMEImage(fp.read())
+        fp.close()
+        img.add_header('Content-ID', '<image1>')
+        msg.attach(img)
 
 
-
-
-
-
-
-
-
-
-
-
-        
+        s = smtplib.SMTP("mail.adnap.co",26)
+        s.set_debuglevel(1)
+        s.ehlo()
+        s.starttls()
+        s.login("eventRequest@adnap.co","Heero4501")
+        s.sendmail("eventRequest@adnap.co", strTo,  msg.as_string())
+        s.quit()
+        print(name,organization,date,dateNum,description,address,food,alcohol,merchandise,lat,longitude)
+    def getPicture(self):
+         root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
+         self.picture.set(root.filename)
+         self.pictureEntry.insert(0,root.filename)
 
 
 if __name__ == "__main__":
