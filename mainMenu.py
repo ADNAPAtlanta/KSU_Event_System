@@ -7,7 +7,7 @@ from geopy.geocoders import GoogleV3
 import datetime
 import time
 from email.mime.text import MIMEText
-
+import os
 
 
 try:
@@ -132,7 +132,12 @@ months = {"Jan": "01", "Feb":"02", "Mar":"03", "Apr":"04",
 				    "Sep":"09", "Oct":"10", "Nov":"11", "Dec":"12"}
 
 years = ["2016","2017","2018"]
-            
+
+hours = ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"]
+
+minutes = ["01", "02", "03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24",
+        "25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57"
+           "58","59","60"]            
 
 
 
@@ -172,6 +177,11 @@ class eventForm:
         self.year = StringVar()
         self.year.set("2016")
 
+        self.hour = StringVar()
+        self.hour.set("00")
+        self.minute = StringVar()
+        self.minute.set("00")
+
 
         #Entry labels
         self.nameLabel = Label(master, text="Name of Event",underline=0)
@@ -198,10 +208,19 @@ class eventForm:
         self.monthOption.grid(column=4,row=1)
         self.yearOption = OptionMenu(master,self.year,*years)
         self.yearOption.grid(column=5,row=1)
+
+        self.hourLabel = Label(master, text="Hour", underline=0)
+        self.hourLabel.grid(column=4,row=2)
+        self.minuteLabel = Label(master, text="Minute", underline=0)
+        self.minuteLabel.grid(column=5, row=2)
+        self.hourOption = OptionMenu(master,self.hour,*hours)
+        self.hourOption.grid(column=4, row=3)
+        self.minuteOption = OptionMenu(master,self.minute,*minutes)
+        self.minuteOption.grid(column=5, row=3)
         
         self.descriptionLabel = Label(master, text="Description",underline=0)
         self.descriptionLabel.grid(column=1)
-        self.descriptionEntry = Text(master,bd=3,height=5)
+        self.descriptionEntry = Text(master,bd=3,height=5, )
         self.descriptionEntry.grid(column=1,columnspan=2)
 
         self.addressLabel = Label(master, text="Address (Enter if off campus)",underline=0)
@@ -256,7 +275,7 @@ class eventForm:
         month =  months[self.month.get()]
         date =  self.day.get() + "/" + month + "/" + self.year.get()
         dateNum =  time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y").timetuple())
-        description = "description :" + self.description.get()
+        description = "description :" + self.descriptionEntry.get("1.0",END)
         food = "food :" + self.food.get()
         alcohol = "alcohol : " +self.alcohol.get()
         merchandise = "merchandise :" + self.merchandise.get()
@@ -264,15 +283,16 @@ class eventForm:
         strTo = ["techSupport@adnap.co"]
         msgRoot = MIMEMultipart(organization)
         message = MIMEMultipart()
+        hour = self.hour.get()
+        minute = self.minute.get()
 
-        message["Subject"] = organization
+        message["Subject"] = self.organization.get()
 
 
         fp = open(picture, "rb")
         img = MIMEImage(fp.read())
         fp.close()
         #msg.attach(img)
-
 
         if self.building.get() == "Other":
             address = self.address.get()
@@ -285,28 +305,21 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
-        messageText =  name,organization, date, dateNum, description, address,food, alcohol,merchandise,"lat :" +str(lat),"longitude :" +str(longitude)
-        message = 'Subject: %s\n%s' % (self.organization.get(),messageText )
+        messageText =  name,organization, date, dateNum, description, address,food, alcohol,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), hour, minute
         msg = MIMEText(str(messageText))
-        msg["Subject"] = self.organization.get()
-        msgAlternative = MIMEMultipart('alternative')
-        msg.attach(msgAlternative)
-        msgText = MIMEText('This is the alternative plain text message.')
-        msgAlternative.attach(msgText)
-
-        fp = open(picture, "rb")
-        img = MIMEImage(fp.read())
-        fp.close()
+        message.attach(msg)
+        fp = open(picture, "rb").read()
+        img = MIMEImage(fp,name=os.path.basename(picture))
+        #fp.close()
         img.add_header('Content-ID', '<image1>')
-        msg.attach(img)
-
-
+        message.attach(img)
+        
         s = smtplib.SMTP("mail.adnap.co",26)
-        s.set_debuglevel(1)
+        #s.set_debuglevel(1)
         s.ehlo()
         s.starttls()
         s.login("eventRequest@adnap.co","Heero4501")
-        s.sendmail("eventRequest@adnap.co", strTo,  msg.as_string())
+        s.sendmail("eventRequest@adnap.co", strTo,  message.as_string())
         s.quit()
         print(name,organization,date,dateNum,description,address,food,alcohol,merchandise,lat,longitude)
     def getPicture(self):
