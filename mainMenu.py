@@ -322,6 +322,12 @@ class eventForm:
         s.sendmail("eventRequest@adnap.co", strTo,  message.as_string())
         s.quit()
         print(name,organization,date,dateNum,description,address,food,alcohol,merchandise,lat,longitude)
+        self.nameEntry.delete(0, END)
+        self.organizationEntry.delete(0, END)
+        self.pictureEntry.delete(0, END)
+        self.descriptionEntry.delete(0, END)
+        self.addressEntry.delete(0, END)
+        self.emailEntry.delete(0, END)
     def getPicture(self):
          root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
          self.picture.set(root.filename)
