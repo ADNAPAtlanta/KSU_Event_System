@@ -182,6 +182,10 @@ class eventForm:
         self.hour.set("00")
         self.minute = StringVar()
         self.minute.set("00")
+        self.endHour = StringVar()
+        self.endHour.set("00")
+        self.endMinute = StringVar()
+        self.endMinute.set("00")
 
 
         #Entry labels
@@ -218,6 +222,15 @@ class eventForm:
         self.hourOption.grid(column=4, row=3)
         self.minuteOption = OptionMenu(master,self.minute,*minutes)
         self.minuteOption.grid(column=5, row=3)
+        
+        self.endHourLabel = Label(master, text="Enter ending hour", underline=0)
+        self.endHourLabel.grid(column=6, row=2)
+        self.endMinuteLabel = Label(master, text="Enter ending minute", underline=0)
+        self.endMinuteLabel.grid(column=7, row=2)
+        self.endHourOption = OptionMenu(master, self.endHour,*hours)
+        self.endHourOption.grid(column=6, row=3)
+        self.endMinuteOption = OptionMenu(master, self.endMinute, *minutes)
+        self.endMinuteOption.grid(column=7, row=3)
         
         self.descriptionLabel = Label(master, text="Description",underline=0)
         self.descriptionLabel.grid(column=1)
