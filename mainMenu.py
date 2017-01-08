@@ -156,6 +156,7 @@ class eventForm:
         self.building = StringVar()
         self.organization = StringVar()
         self.description = StringVar()
+        self.shareMessage = StringVar()
         self.picture = StringVar()
         self.lat = DoubleVar()
         self.longitude = DoubleVar()
@@ -163,8 +164,8 @@ class eventForm:
         self.category = StringVar()
         self.food = StringVar()
         self.food.set("No")
-        self.alcohol = StringVar()
-        self.alcohol.set("No")
+        self.music = StringVar()
+        self.music.set("No")
         self.merchandise = StringVar()
         self.merchandise.set("No")
 
@@ -220,8 +221,13 @@ class eventForm:
         
         self.descriptionLabel = Label(master, text="Description",underline=0)
         self.descriptionLabel.grid(column=1)
-        self.descriptionEntry = Text(master,bd=3,height=5, )
+        self.descriptionEntry = Text(master,bd=3,height=5 )
         self.descriptionEntry.grid(column=1,columnspan=2)
+
+        self.shareMessageLabel = Label(master, text="Enter message to be shared",underline=0)
+        self.shareMessageLabel.grid(column=1)
+        self.shareMessageEntry = Text(master, bd=3,height=2)
+        self.shareMessageEntry.grid(column=1,columnspan=2)
 
         self.addressLabel = Label(master, text="Address (Enter if off campus)",underline=0)
         self.addressLabel.grid(column=2,sticky=W)
@@ -250,12 +256,12 @@ class eventForm:
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
         self.foodChoiceNo.grid(column=1)
 
-        self.alcoholChoiceLabel = Label(master,text= "Will there be alcohol?")
-        self.alcoholChoiceLabel.grid(column=1)
-        self.alcoholChoiceYes = Radiobutton(master,text="Yes",variable=self.alcohol,value="Yes")
-        self.alcoholChoiceYes.grid(column=1)
-        self.alcoholChoiceNo = Radiobutton(master,text="No",variable=self.alcohol,value="No")
-        self.alcoholChoiceNo.grid(column=1)
+        self.musicChoiceLabel = Label(master,text= "Will there be music?")
+        self.musicChoiceLabel.grid(column=1)
+        self.musicChoiceYes = Radiobutton(master,text="Yes",variable=self.music,value="Yes")
+        self.musicChoiceYes.grid(column=1)
+        self.musicChoiceNo = Radiobutton(master,text="No",variable=self.music,value="No")
+        self.musicChoiceNo.grid(column=1)
 
         self.merchandiseChoiceLabel = Label(master,text= "Will there be merchandise?")
         self.merchandiseChoiceLabel.grid(column=1)
@@ -276,8 +282,9 @@ class eventForm:
         date =  self.day.get() + "/" + month + "/" + self.year.get()
         dateNum =  time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y").timetuple())
         description = "description :" + self.descriptionEntry.get("1.0",END)
+        shareMessage = "shareMessage :" + self.shareMessageEntry.get("1.0",END)
         food = "food :" + self.food.get()
-        alcohol = "alcohol : " +self.alcohol.get()
+        music = "music : " +self.music.get()
         merchandise = "merchandise :" + self.merchandise.get()
         strFrom = self.email.get()
         strTo = ["techSupport@adnap.co"]
@@ -305,7 +312,7 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
-        messageText =  name,organization, date, dateNum, description, address,food, alcohol,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), hour, minute
+        messageText =  name,organization, date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), hour, minute
         msg = MIMEText(str(messageText))
         message.attach(msg)
         fp = open(picture, "rb").read()
@@ -321,13 +328,14 @@ class eventForm:
         s.login("eventRequest@adnap.co","Heero4501")
         s.sendmail("eventRequest@adnap.co", strTo,  message.as_string())
         s.quit()
-        print(name,organization,date,dateNum,description,address,food,alcohol,merchandise,lat,longitude)
+        print(name,organization,date,dateNum,description,address,food,music,merchandise,lat,longitude)
         self.nameEntry.delete(0, END)
         self.organizationEntry.delete(0, END)
         self.pictureEntry.delete(0, END)
         self.descriptionEntry.delete(0, END)
         self.addressEntry.delete(0, END)
         self.emailEntry.delete(0, END)
+        self.shareMessageEntry.delete(0,END)
     def getPicture(self):
          root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
          self.picture.set(root.filename)
