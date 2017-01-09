@@ -243,18 +243,18 @@ class eventForm:
 
 
         self.buildingLabel = Label(master, text="Building",underline=0)
-        self.buildingLabel.grid(column=1)
+        self.buildingLabel.grid(column=1, row=8)
         self.building.set("Other")
         self.buildingSelection = OptionMenu(master,self.building,*ksuBuildingsOrdered)
-        self.buildingSelection.grid(column=1)
+        self.buildingSelection.grid(column=1, row=9)
 
 
         self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
-        self.foodChoiceLabel.grid(column=1)
+        self.foodChoiceLabel.grid(column=1,row=10)
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
-        self.foodChoiceYes.grid(column=1)
+        self.foodChoiceYes.grid(column=1, row=11)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
-        self.foodChoiceNo.grid(column=1)
+        self.foodChoiceNo.grid(column=1, row=12)
 
         self.musicChoiceLabel = Label(master,text= "Will there be music?")
         self.musicChoiceLabel.grid(column=1)
