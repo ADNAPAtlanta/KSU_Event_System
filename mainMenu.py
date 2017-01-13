@@ -22,13 +22,16 @@ except ImportError:
 
 ksuBuildings = {"Baily Athletic Facility": "220 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
                 "Bailey Performance Hall":"488 Prillaman Way NW Kennesaw, GA 30144",
+                 "Baseball Field": "208 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
                 "Burruss":"560 Parliament Garden Way NW Kennesaw, GA 30144",
+                 "Campus Green": "565 Cobb Ave NW Kennesaw, GA 30144",
                 "Campus Services":"1075 Canton Pl NW Kennesaw, GA 30144",
                 "Chastain Pointe":"1200 Chastain Rd NW Kennesaw, GA 30144",
                 "Clendenin":"275 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
                 "Convocation Center":"590 Cobb Ave NW Kennesaw, GA 30144",
                 "Education Classroom Facility":"580 Parliament Garden Way NW Kennesaw, GA 30144",
                 "English Building":"440 Bartow Ave NW Kennesaw, GA 30144",
+                "Gazebo":"410 Bartow Ave NW Kennesaw, GA 30144",
                 "House 48 - ASap":"3499 Campus Loop Rd NW Kennesaw, GA 30144",
                 "House 49 - Cox Family Enterprise":"3495 Campus Loop Rd NW Kennesaw, GA 30144",
                 "House 51 - TBD":"3217 Campus Loop Rd NW Kennesaw, GA 30144",
@@ -51,10 +54,14 @@ ksuBuildings = {"Baily Athletic Facility": "220 Kennesaw State Univ Rd NW Kennes
                 "Pilcher":"375 Cobb Ave NW Kennesaw, GA 30144",
                 "Prillaman Health Sciences":"520 Parliament Garden Way NW Kennesaw, GA 30144",
                 "Public Safety":"351 Paulding Ave NW Kennesaw, GA 30144",
+                "Rec Fields" : "270 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
                 "Science":"370 Paulding Ave NW Kennesaw, GA 30144",
                 "Science Laboratory":"105 Marietta Dr NW Kennesaw, GA 30144",
                 "Student Recreation & Activities Center":"290 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
+                "Soccer Field": "1000 Chastain Rd NW Kennesaw, GA 30144",
                 "Social Sciences":"402 Bartow Ave NW Kennesaw, GA 30144",
+                "Softball Field":"250 Kennesaw State Univ Rd NW Kennesaw, GA 30144",
+                "Sports and Recreation Park":"390 Big Shanty Rd NW Kennesaw, GA 30144",
                 "Student Athlete Success":"1150 Big Shanty Rd NW Kennesaw, GA 30144",
                 "Student Center/Bookstore":"395 Cobb Ave NW Kennesaw, GA 30144",
                 "Tech Annex":"361 Paulding Ave NW Kennesaw, GA 30144",
@@ -75,13 +82,16 @@ ksuBuildings = {"Baily Athletic Facility": "220 Kennesaw State Univ Rd NW Kennes
 
 ksuBuildingsOrdered = ["Baily Athletic Facility",
                 "Bailey Performance Hall",
+                "Baseball Field",
                 "Burruss",
+                 "Campus Green",
                 "Campus Services",
                 "Chastain Pointe",
                 "Clendenin",
                 "Convocation Center",
                 "Education Classroom Facility",
                 "English Building",
+                 "Gazebo",
                 "House 48 - ASap",
                 "House 49 - Cox Family Enterprise",
                 "House 51 - TBD",
@@ -104,10 +114,13 @@ ksuBuildingsOrdered = ["Baily Athletic Facility",
                 "Pilcher",
                 "Prillaman Health Sciences",
                 "Public Safety",
+                "Rec Fields",
                 "Science",
                 "Science Laboratory",
                 "Student Recreation & Activities Center",
                 "Social Sciences",
+                "Softball Field",
+                "Sports and Recreation Park",
                 "Student Athlete Success",
                 "Student Center/Bookstore",
                 "Tech Annex",
@@ -133,11 +146,12 @@ months = {"Jan": "01", "Feb":"02", "Mar":"03", "Apr":"04",
 
 years = ["2016","2017","2018"]
 
-hours = ["00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"]
+hours = ["00","01","02","3","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"]
 
-minutes = ["01", "02", "03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24",
-        "25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57"
-           "58","59","60"]            
+minutes = ["00","01", "02", "03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24",
+        "25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57",
+           "58","59","60"]
+pmAM = ["PM", "AM"]
 
 
 
@@ -178,6 +192,9 @@ class eventForm:
         self.year = StringVar()
         self.year.set("2016")
 
+        self.pmAM = StringVar()
+        self.pmAM.set("PM")
+
         self.hour = StringVar()
         self.hour.set("00")
         self.minute = StringVar()
@@ -213,6 +230,9 @@ class eventForm:
         self.monthOption.grid(column=4,row=1)
         self.yearOption = OptionMenu(master,self.year,*years)
         self.yearOption.grid(column=5,row=1)
+
+        self.pmAMOption = OptionMenu(master, self.pmAM, *pmAM)
+        self.pmAMOption.grid(column=3, row=3)
 
         self.hourLabel = Label(master, text="Hour", underline=0)
         self.hourLabel.grid(column=4,row=2)
@@ -291,9 +311,14 @@ class eventForm:
         name = "name :" + self.name.get()
         organization = "organization :" + self.organization.get()
         picture = self.picture.get()
+        pmAM = self.pmAM.get()
+        hour = self.hour.get()
+        minute = self.minute.get()
+        endHour = self.endHour.get()
+        endMinute = self.endMinute.get()
         month =  months[self.month.get()]
-        date =  self.day.get() + "/" + month + "/" + self.year.get()
-        dateNum =  time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y").timetuple())
+        date =  self.day.get() + "/" + month + "/" + self.year.get() + " " + hour + ":" + minute
+        dateNum =  time.mktime(datetime.datetime.strptime(date, "%d/%m/%Y %H:%M").timetuple())
         description = "description :" + self.descriptionEntry.get("1.0",END)
         shareMessage = "shareMessage :" + self.shareMessageEntry.get("1.0",END)
         food = "food :" + self.food.get()
@@ -303,8 +328,9 @@ class eventForm:
         strTo = ["techSupport@adnap.co"]
         msgRoot = MIMEMultipart(organization)
         message = MIMEMultipart()
-        hour = self.hour.get()
-        minute = self.minute.get()
+
+
+
 
         message["Subject"] = self.organization.get()
 
@@ -325,7 +351,7 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
-        messageText =  name,organization, date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), hour, minute
+        messageText =  name,organization, date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), pmAM,hour, minute, endHour,endMinute
         msg = MIMEText(str(messageText))
         message.attach(msg)
         fp = open(picture, "rb").read()
@@ -345,10 +371,10 @@ class eventForm:
         self.nameEntry.delete(0, END)
         self.organizationEntry.delete(0, END)
         self.pictureEntry.delete(0, END)
-        self.descriptionEntry.delete(0, END)
+        self.descriptionEntry.delete("1.0", END)
         self.addressEntry.delete(0, END)
         self.emailEntry.delete(0, END)
-        self.shareMessageEntry.delete(0,END)
+        self.shareMessageEntry.delete("1.0",END)
     def getPicture(self):
          root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
          self.picture.set(root.filename)
