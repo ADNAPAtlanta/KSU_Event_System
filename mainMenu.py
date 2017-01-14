@@ -310,6 +310,7 @@ class eventForm:
         geolocator = GoogleV3(api_key="AIzaSyB9NYRXQZN3gIcJue5SJa2jem7UdOzmOvI")
         name = "name :" + self.name.get()
         organization = "organization :" + self.organization.get()
+        locationName = "location name :" + self.building.get()
         picture = self.picture.get()
         pmAM = self.pmAM.get()
         hour = self.hour.get()
@@ -351,7 +352,7 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
-        messageText =  name,organization, date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), pmAM,hour, minute, endHour,endMinute
+        messageText =  name,organization, locationName,date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), pmAM,hour, minute, endHour,endMinute
         msg = MIMEText(str(messageText))
         message.attach(msg)
         fp = open(picture, "rb").read()
@@ -377,7 +378,7 @@ class eventForm:
         self.shareMessageEntry.delete("1.0",END)
     def getPicture(self):
          root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("jpeg files","*.jpg"),("all files","*.*")))
-         self.picture.set(root.filename)
+         self.picture.set((root.filename))
          self.pictureEntry.insert(0,root.filename)
 
 
