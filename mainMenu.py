@@ -153,7 +153,7 @@ minutes = ["00","01", "02", "03","04","05","06","07","08","09","10","11","12","1
            "58","59","60"]
 pmAM = ["PM", "AM"]
 
-
+categories = ["fun","academic","greek","networking","ncaa","cultural","athletics","service","social"]
 
 class eventForm:
     def __init__(self,master):
@@ -169,6 +169,8 @@ class eventForm:
         self.address = StringVar()
         self.building = StringVar()
         self.organization = StringVar()
+        self.category = StringVar()
+        self.category.set("fun")
         self.description = StringVar()
         self.shareMessage = StringVar()
         self.picture = StringVar()
@@ -262,28 +264,33 @@ class eventForm:
         self.shareMessageEntry = Text(master, bd=3,height=2)
         self.shareMessageEntry.grid(column=1,columnspan=2)
 
-        self.addressLabel = Label(master, text="Address (Enter if off campus)",underline=0)
-        self.addressLabel.grid(column=2,sticky=W)
-        self.addressEntry = Entry(master,textvariable=self.address,bd=3)
-        self.addressEntry.grid(column=2,sticky=W)
+        self.addressLabel = Label(master, text="Address (Enter if off campus)", underline=0)
+        self.addressLabel.grid(column=2, sticky=W)
+        self.addressEntry = Entry(master, textvariable=self.address,bd=3)
+        self.addressEntry.grid(column=2, sticky=W)
 
         self.pictureLabel = Label(master, text="Insert picture")
-        self.pictureLabel.grid(column=2,sticky=W)
+        self.pictureLabel.grid(column=2, sticky=W)
         self.pictureEntry = Entry(master)
-        self.pictureEntry.grid(column=2,sticky=W)
-        self.pictureButton = Button(master, text="Search",command=self.getPicture)
+        self.pictureEntry.grid(column=2, sticky=W)
+        self.pictureButton = Button(master, text="Search", command=self.getPicture)
         self.pictureButton.grid(column=2,sticky=W)
 
+        self.categoryLabel = Label(master, text="Category", underline=0)
+        self.categoryLabel.grid(column=2,row=2 )
+        self.categoryOption = OptionMenu(master, self.category, *categories)
+        self.categoryOption.grid(column=2, row=3)
 
-        self.buildingLabel = Label(master, text="Building",underline=0)
+
+        self.buildingLabel = Label(master, text="Building", underline=0)
         self.buildingLabel.grid(column=1, row=8)
         self.building.set("Other")
-        self.buildingSelection = OptionMenu(master,self.building,*ksuBuildingsOrdered)
+        self.buildingSelection = OptionMenu(master, self.building, *ksuBuildingsOrdered)
         self.buildingSelection.grid(column=1, row=9)
 
 
-        self.foodChoiceLabel = Label(master, text="Is food available?",underline=0)
-        self.foodChoiceLabel.grid(column=1,row=10)
+        self.foodChoiceLabel = Label(master, text="Is food available?", underline=0)
+        self.foodChoiceLabel.grid(column=1, row=10)
         self.foodChoiceYes = Radiobutton(master, text="Yes", variable=self.food, value="Yes")
         self.foodChoiceYes.grid(column=1, row=11)
         self.foodChoiceNo = Radiobutton(master,text="No",variable=self.food,value="No")
@@ -352,7 +359,7 @@ class eventForm:
             location = geolocator.geocode(address, timeout=10)
             lat = location.latitude
             longitude = location.longitude
-        messageText =  name,organization, locationName,date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), pmAM,hour, minute, endHour,endMinute
+        messageText =  name,organization, locationName,date, dateNum, description, shareMessage,address,food, music,merchandise,"lat :" +str(lat),"longitude :" +str(longitude), pmAM,hour, minute, "ending time: "+ endHour,endMinute
         msg = MIMEText(str(messageText))
         message.attach(msg)
         fp = open(picture, "rb").read()
